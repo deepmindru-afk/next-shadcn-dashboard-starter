@@ -48,3 +48,12 @@ next-env.d.ts
 # Sentry Config File
 .env.sentry-build-plugin
 .cptr
+
+# Python backend
+*.db
+__pycache__/
+**/__pycache__/
+*.pyc
+.venv/
+venv/
+env/

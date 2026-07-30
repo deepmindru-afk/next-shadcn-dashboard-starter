@@ -1,45 +1,34 @@
 // ============================================================
 // Route Handler — Products (list + create)
 // ============================================================
-// Used with Pattern 2 (Route Handlers + ORM) or Pattern 3 (BFF).
-//
-// Fullstack (ORM): Replace fakeProducts calls with your ORM
-//   const products = await db.query.products.findMany({ ... })
-//
-// BFF (proxy): Replace with fetch to your external backend
-//   const res = await fetch(`${BACKEND_URL}/products?${searchParams}`, {
-//     headers: { Authorization: `Bearer ${token}` }
-//   })
-//   return NextResponse.json(await res.json())
-//
-// Current: Mock (in-memory fake data for demo/prototyping)
+// BFF pattern: forwards requests to the Python backend.
 // ============================================================
 
-import { fakeProducts } from '@/constants/mock-api';
+import { proxyToPython } from '@/lib/python-proxy';
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(request: NextRequest) {
-  const { searchParams } = request.nextUrl;
-
-  const page = Number(searchParams.get('page') ?? 1);
-  const limit = Number(searchParams.get('limit') ?? 10);
-  const categories = searchParams.get('categories') ?? undefined;
-  const search = searchParams.get('search') ?? undefined;
-  const sort = searchParams.get('sort') ?? undefined;
-
-  const data = await fakeProducts.getProducts({
-    page,
-    limit,
-    categories,
-    search,
-    sort
-  });
-
-  return NextResponse.json(data);
+  try {
+    const { searchParams } = request.nextUrl;
+    const params = new URLSearchParams(searchParams);
+    const data = await proxyToPython<any>(`/api/products?${params.toString()}`);
+    return NextResponse.json(data);
+  } catch (err) {
+    const message = err instanceof Error ? err.message : 'Internal server error';
+    return NextResponse.json({ success: false, message }, { status: 502 });
+  }
 }
 
 export async function POST(request: NextRequest) {
-  const body = await request.json();
-  const data = await fakeProducts.createProduct(body);
-  return NextResponse.json(data, { status: 201 });
+  try {
+    const body = await request.json();
+    const data = await proxyToPython<any>('/api/products', {
+      method: 'POST',
+      body: JSON.stringify(body),
+    });
+    return NextResponse.json(data, { status: 201 });
+  } catch (err) {
+    const message = err instanceof Error ? err.message : 'Internal server error';
+    return NextResponse.json({ success: false, message }, { status: 502 });
+  }
 }
