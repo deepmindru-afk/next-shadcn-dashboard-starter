@@ -1046,4 +1046,3 @@ To include in `useFormFields`, add to its return object.
 | ------------- | ------------------------------------------------------ | ------------------------------------------ |
 | Product CRUD  | `src/features/products/components/product-form.tsx`    | Pattern 1, split schema, onBlur validators |
 | Sheet Product | `src/features/forms/components/sheet-product-form.tsx` | Pattern 2 in Sheet |
-| Auth          | `src/features/auth/components/user-auth-form.tsx`      | Pattern 2, minimal |

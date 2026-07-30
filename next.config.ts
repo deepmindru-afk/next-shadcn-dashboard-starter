@@ -11,16 +11,7 @@ const baseConfig: NextConfig = {
         hostname: 'api.slingacademy.com',
         port: ''
       },
-      {
-        protocol: 'https',
-        hostname: 'img.clerk.com',
-        port: ''
-      },
-      {
-        protocol: 'https',
-        hostname: 'clerk.com',
-        port: ''
-      }
+
     ]
   },
   transpilePackages: ['geist'],
